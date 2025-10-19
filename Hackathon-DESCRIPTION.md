@@ -1,5 +1,3 @@
-This app is meant to help humans establish new relationships.
-
 we are currently working on our projects for https://cerebralvalley.ai/e/2025-ted-ai-hackathon hackathon.
 
 Hackathon theme = "Agentic Multimodal Applications, with problem statements across camera integration, whiteboard problem solving, and live slide analysis."
