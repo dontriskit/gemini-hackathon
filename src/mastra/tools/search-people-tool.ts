@@ -85,8 +85,8 @@ export const searchPeopleTool = createTool({
       const searchResults = response.searchResults || [];
 
       const matches = searchResults.slice(0, limit || 3).map((result: any) => {
-        // Vectara stores metadata in documentMetadata
-        const metadata = result.documentMetadata || {};
+        // Vectara stores metadata in partMetadata (not documentMetadata!)
+        const metadata = result.partMetadata || {};
         const docId = result.documentId || "";
 
         return {
@@ -94,7 +94,7 @@ export const searchPeopleTool = createTool({
           name: metadata.name || "Unknown",
           headline: metadata.headline || "No headline available",
           location: metadata.location || "Location not specified",
-          summary: metadata.summary || result.text?.slice(0, 200) || "No summary available",
+          summary: metadata.summary || "No summary available",
           score: result.score || 0,
           reasoning: result.text?.slice(0, 300) || "Relevant profile based on search criteria",
         };

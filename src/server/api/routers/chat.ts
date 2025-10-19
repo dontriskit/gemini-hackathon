@@ -56,11 +56,22 @@ export const chatRouter = createTRPCRouter({
         maxSteps: 3, // Allow tool usage
       });
 
+      console.log("🔍 Agent response.toolResults:", response.toolResults);
+      console.log("🔍 Number of tool results:", response.toolResults?.length || 0);
+
+      // Extract serializable data from toolResults (Mastra objects aren't JSON-safe)
+      const serializableToolResults = response.toolResults?.map((toolResult: any) => ({
+        toolName: toolResult.payload?.toolName || "",
+        result: toolResult.payload?.result || null,
+      })) || [];
+
+      console.log("📦 Serializable tool results:", serializableToolResults);
+
       return {
         success: true,
         message: response.text,
         threadId: currentThreadId,
-        toolResults: response.toolResults,
+        toolResults: serializableToolResults,
       };
     }),
 
