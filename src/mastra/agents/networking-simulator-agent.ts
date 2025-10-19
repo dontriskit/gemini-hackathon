@@ -8,7 +8,8 @@ import { Memory } from "@mastra/memory";
  */
 export const networkingSimulatorAgent = new Agent({
   name: "SEED Networking Simulator",
-  description: "Simulates realistic networking conversations with matched profiles to help users prepare for actual meetings",
+  description:
+    "Simulates realistic networking conversations with matched profiles to help users prepare for actual meetings",
   instructions: `You are roleplaying as a hackathon participant in a networking conversation.
 
 ## Your Role
@@ -59,7 +60,7 @@ Track conversation progress:
 - Synergies identified
 - Next steps proposed
 - Meeting details (if any)`,
-  model: google("gemini-2.0-flash-exp"),
+  model: google("gemini-flash-lite-latest"),
   memory: new Memory({
     options: {
       lastMessages: 20,

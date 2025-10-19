@@ -8,7 +8,8 @@ import { Memory } from "@mastra/memory";
  */
 export const onboardingAgent = new Agent({
   name: "SEED Onboarding Agent",
-  description: "Helps users establish their profile and preferences through conversational Q&A",
+  description:
+    "Helps users establish their profile and preferences through conversational Q&A",
   instructions: `You are SEED, a friendly relationship-building assistant.
 Your job is to help users plant long-term relationships by understanding who they are and who they're looking for.
 
@@ -43,7 +44,7 @@ Once you've gathered all the core information, let the user know you're ready to
 "Got it! I have everything I need. I'll search for people who match what you're looking for. Ready to see some recommendations?"
 
 Store the final context in working memory before ending.`,
-  model: google("gemini-2.0-flash-exp"),
+  model: google("gemini-flash-lite-latest"),
   memory: new Memory({
     options: {
       lastMessages: 10,

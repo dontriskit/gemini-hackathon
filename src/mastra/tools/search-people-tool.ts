@@ -67,8 +67,8 @@ export const searchPeopleTool = createTool({
             },
           ],
           contextConfiguration: {
-            sentencesBefore: 1,
-            sentencesAfter: 1,
+            sentencesBefore: 2,
+            sentencesAfter: 2,
           },
           limit: limit || 3,
         },
@@ -79,19 +79,28 @@ export const searchPeopleTool = createTool({
         },
       });
 
+      console.log("Vectara response:", JSON.stringify(response, null, 2));
+
       // Parse results and extract profile data
-      const matches = response.searchResults?.map((result: any) => {
-        const metadata = result.documentMetadata;
+      const searchResults = response.searchResults || [];
+
+      const matches = searchResults.slice(0, limit || 3).map((result: any) => {
+        // Vectara stores metadata in documentMetadata
+        const metadata = result.documentMetadata || {};
+        const docId = result.documentId || "";
+
         return {
-          username: metadata.username || "unknown",
-          name: metadata.name || metadata.username || "Unknown",
-          headline: metadata.headline || "No headline",
+          username: metadata.username || docId || "unknown",
+          name: metadata.name || "Unknown",
+          headline: metadata.headline || "No headline available",
           location: metadata.location || "Location not specified",
-          summary: metadata.summary || result.text,
+          summary: metadata.summary || result.text?.slice(0, 200) || "No summary available",
           score: result.score || 0,
-          reasoning: result.text || "Relevant profile based on search criteria",
+          reasoning: result.text?.slice(0, 300) || "Relevant profile based on search criteria",
         };
-      }) || [];
+      });
+
+      console.log(`Found ${matches.length} matches:`, matches);
 
       return {
         success: true,

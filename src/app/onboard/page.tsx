@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
+import { ChatMessage } from "@/components/chat-message";
 
 export default function OnboardPage() {
   const router = useRouter();
@@ -35,11 +36,11 @@ export default function OnboardPage() {
     }
     setSessionId(sid);
 
-    // Initial greeting from agent
-    onboardMutation.mutate({
-      message: "Hi!",
-      sessionId: sid,
-    });
+    // Show welcome message (no API call yet - user starts conversation)
+    setMessages([{
+      role: "assistant",
+      content: "Hi! I'm SEED, and I'm here to help you find great connections at the hackathon. Let's start by getting to know you better.\n\nWhat's your name?"
+    }]);
   }, []);
 
   useEffect(() => {
@@ -79,20 +80,7 @@ export default function OnboardPage() {
         <div className="container mx-auto max-w-3xl px-4 py-8">
           <div className="space-y-4">
             {messages.map((msg, idx) => (
-              <div
-                key={idx}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`max-w-[80%] rounded-lg px-4 py-3 ${
-                    msg.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-card border border-border text-card-foreground"
-                  }`}
-                >
-                  <p className="whitespace-pre-wrap text-sm">{msg.content}</p>
-                </div>
-              </div>
+              <ChatMessage key={idx} role={msg.role as "user" | "assistant"} content={msg.content} />
             ))}
             {onboardMutation.isPending && (
               <div className="flex justify-start">

@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { api } from "@/trpc/react";
 import { useParams, useRouter } from "next/navigation";
+import { ChatMessage } from "@/components/chat-message";
 
 interface ProfileContext {
   username: string;
@@ -138,24 +139,13 @@ export default function SimulatePage() {
         <div className="container mx-auto max-w-3xl px-4 py-8">
           <div className="space-y-4">
             {messages.map((msg, idx) => (
-              <div
-                key={idx}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div
-                  className={`max-w-[80%] rounded-lg px-4 py-3 ${
-                    msg.role === "user"
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-card border border-border text-card-foreground"
-                  }`}
-                >
-                  {msg.role === "assistant" && (
-                    <p className="mb-1 text-xs font-semibold opacity-70">
-                      {profileContext.name.split(" ")[0]}
-                    </p>
-                  )}
-                  <p className="whitespace-pre-wrap text-sm">{msg.content}</p>
-                </div>
+              <div key={idx}>
+                {msg.role === "assistant" && (
+                  <p className="mb-1 ml-1 text-xs font-semibold text-muted-foreground">
+                    {profileContext.name.split(" ")[0]}
+                  </p>
+                )}
+                <ChatMessage role={msg.role as "user" | "assistant"} content={msg.content} />
               </div>
             ))}
             {simulateMutation.isPending && (
