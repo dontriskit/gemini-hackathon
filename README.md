@@ -1,29 +1,105 @@
-# Create T3 App
+# SEED: Relationship Navigator
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+SEED helps you find the people who can unlock your next chapter—investors, co-founders, mentors, collaborators, or even the spark for a new relationship. Share what you need using text or voice, and the system guides you through a focused dialogue to surface the strongest matches.
 
-## What's next? How do I make an app with this?
+<img src="./Relationship.png" alt="description" width="50%">
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Highlights
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+- Multimodal onboarding captures context-rich requests from text or audio.
+- Guided match interviews ask clarifying questions and adapt to your goals.
+- Persona-aware search returns investors, founders, operators, or romantic matches.
+- AI-powered profile cards summarize why each connection matters.
+- Vectara-backed retrieval keeps recommendations grounded in the latest profiles.
+- Optional Google Maps grounding suggests meeting spots near SHACK15 in SF or wherever you are.
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## How It Works
 
-## Learn More
+1. **Capture intent** — Gemini Flash 2.5 ingests text or recorded voice notes and extracts goals, constraints, and vibes.
+2. **Clarify** — A Mastra agent steers a short Q&A to tighten the brief and highlight must-haves.
+3. **Retrieve** — Vectara vector search + Postgres metadata surface the closest matching people.
+4. **Guide** — SEED presents curated cards, conversation starters, and follow-up prompts to help you act.
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+## Stack
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+- Next.js 15 + React 19 + Tailwind CSS on the T3 stack foundation.
+- Drizzle ORM with PostgreSQL for structured profile and session data.
+- Mastra agents orchestrating Gemini multimodal prompts.
+- Vectara for retrieval-augmented matching and memory.
+- Optional Google Maps grounding for location-aware suggestions.
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+## Getting Started
 
-## How do I deploy this?
+### 1. Install dependencies
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+```bash
+pnpm install
+```
+
+### 2. Configure environment
+
+```bash
+cp .env.example .env
+```
+
+Update `.env` with:
+
+- `DATABASE_URL` pointing to your local or hosted Postgres instance.
+- `GOOGLE_GENERATIVE_AI_API_KEY` for Gemini.
+- `VECTARA_API_KEY` and `VECTARA_CORPUS_KEY` for profile retrieval.
+- (Optional) `GOOGLE_MAPS_API_KEY` if you want grounded location recommendations.
+
+### 3. Start the development database
+
+```bash
+./start-database.sh
+pnpm db:migrate
+```
+
+The script requires Docker or Podman and will spin up a Postgres container that matches `DATABASE_URL`.
+
+### 4. Seed retrieval memory (optional but recommended)
+
+```bash
+pnpm seed:vectara
+# pnpm reset:vectara to wipe and reload
+```
+
+These scripts upload sample profiles and narratives so recommendations feel grounded instantly.
+
+### 5. Launch the app
+
+```bash
+pnpm dev
+```
+
+Visit `http://localhost:3000` to start matchmaking with SEED.
+
+## Development Toolbox
+
+- `pnpm check` runs linting plus TypeScript.
+- `pnpm format:write` keeps the repo aligned with Prettier and Tailwind class ordering.
+- `pnpm db:studio` opens the Drizzle schema explorer.
+- `pnpm preview` builds and runs a production bundle locally.
+
+## Project Structure
+
+| Path | Description |
+| ---- | ----------- |
+| `src/` | Next.js application code, UI, and agent orchestration. |
+| `drizzle/` | Schema snapshots for migrations. |
+| `scripts/` | Utility scripts for Vectara seeding and maintenance. |
+| `data/` | Starter datasets and conversation prompts used during demos. |
+| `a_context/` | Reference material and agent prompt examples. |
+
+
+## Contributing
+
+1. Fork and clone the repo.
+2. Create a feature branch (`git checkout -b feat/amazing-idea`).
+3. Follow the scripts above to run checks.
+4. Open a pull request with context about the scenario you improved.
+
+---
+
+SEED was crafted for the Cerebral Valley TED AI Hackathon to prove that the right prompts—and the right people—can change everything. Dive in, explore, and help us grow the network.
