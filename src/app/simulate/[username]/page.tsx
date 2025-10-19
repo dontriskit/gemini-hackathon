@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { api } from "@/trpc/react";
 import { useParams, useRouter } from "next/navigation";
 import { ChatMessage } from "@/components/chat-message";
+import { MapsWidget } from "@/components/maps-widget";
+import Script from "next/script";
 
 interface ProfileContext {
   username: string;
@@ -11,6 +13,15 @@ interface ProfileContext {
   headline: string;
   location: string;
   summary: string;
+}
+
+interface MapsSuggestion {
+  widgetToken?: string;
+  suggestions: Array<{
+    name: string;
+    uri: string;
+    placeId?: string;
+  }>;
 }
 
 export default function SimulatePage() {
@@ -21,12 +32,27 @@ export default function SimulatePage() {
   const [sessionId, setSessionId] = useState("");
   const [threadId, setThreadId] = useState("");
   const [profileContext, setProfileContext] = useState<ProfileContext | null>(null);
+  const [mapsSuggestions, setMapsSuggestions] = useState<MapsSuggestion | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const simulateMutation = api.chat.simulate.useMutation({
     onSuccess: (data) => {
       setMessages((prev) => [...prev, { role: "assistant", content: data.message }]);
       setThreadId(data.threadId);
+
+      // Extract Maps widget token if Maps tool was used
+      if (data.toolResults && Array.isArray(data.toolResults)) {
+        for (const toolResult of data.toolResults) {
+          if (toolResult.toolName === "mapsTool" && toolResult.result) {
+            console.log("🗺️ Maps tool result received:", toolResult.result);
+            setMapsSuggestions({
+              widgetToken: toolResult.result.widgetToken,
+              suggestions: toolResult.result.suggestions || [],
+            });
+            break;
+          }
+        }
+      }
     },
   });
 
@@ -157,6 +183,17 @@ export default function SimulatePage() {
                 </div>
               </div>
             )}
+
+            {/* Maps Widget - Shows when Maps tool is used */}
+            {mapsSuggestions && (
+              <div className="mt-4">
+                <MapsWidget
+                  contextToken={mapsSuggestions.widgetToken || ""}
+                  suggestions={mapsSuggestions.suggestions}
+                />
+              </div>
+            )}
+
             <div ref={messagesEndRef} />
           </div>
         </div>

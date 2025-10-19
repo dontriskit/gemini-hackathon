@@ -27,11 +27,12 @@ export const mapsTool = createTool({
     suggestions: z.array(
       z.object({
         name: z.string(),
-        address: z.string(),
-        url: z.string().optional(),
-        description: z.string().optional(),
+        uri: z.string(),
+        placeId: z.string().optional(),
       })
     ),
+    widgetToken: z.string().optional().describe("Google Maps widget context token for rendering interactive map"),
+    responseText: z.string().optional(),
     error: z.string().optional(),
   }),
   execute: async ({ context }) => {
@@ -55,10 +56,10 @@ export const mapsTool = createTool({
       });
 
       const response = await genAI.models.generateContent({
-        model: "gemini-2.0-flash-exp",
-        contents: `What are the best ${placeType} within a ${walkingDistance}-minute walk from here? Give me 3 specific recommendations.`,
+        model: "gemini-2.5-flash", // Supports Maps grounding with widgets
+        contents: `What are the best ${placeType} within a ${walkingDistance}-minute walk from SHACK15 in San Francisco?`,
         config: {
-          tools: [{ googleMaps: {} }],
+          tools: [{ googleMaps: { enableWidget: true } }], // Enable widget!
           toolConfig: {
             retrievalConfig: {
               latLng: shack15Location,
@@ -67,23 +68,26 @@ export const mapsTool = createTool({
         },
       });
 
-      const groundingMetadata = response.candidates?.[0]?.groundingMetadata;
+      const candidate = response.candidates?.[0];
+      const groundingMetadata = candidate?.groundingMetadata;
 
+      console.log("🗺️ Full response:", JSON.stringify(response, null, 2));
       console.log("🗺️ Grounding metadata:", JSON.stringify(groundingMetadata, null, 2));
       console.log("🗺️ Response text:", response.text);
 
       // Extract grounded locations from Maps
       const suggestions = groundingMetadata?.groundingChunks
         ?.filter((chunk: any) => chunk.maps)
-        .slice(0, 3)
         .map((chunk: any) => ({
           name: chunk.maps?.title || "Location",
-          address: chunk.maps?.uri || "",
-          url: chunk.maps?.uri || "",
-          description: response.text || "",
+          uri: chunk.maps?.uri || "",
+          placeId: chunk.maps?.placeId || "",
         })) || [];
 
+      const widgetToken = groundingMetadata?.googleMapsWidgetContextToken || "";
+
       console.log(`🗺️ Extracted ${suggestions.length} suggestions from Maps grounding`);
+      console.log(`🗺️ Widget token:`, widgetToken ? "✅ Present" : "❌ Not available");
 
       // Fallback if no grounded results
       if (suggestions.length === 0) {
@@ -93,29 +97,29 @@ export const mapsTool = createTool({
           suggestions: [
             {
               name: "Sightglass Coffee",
-              address: "270 7th St, San Francisco, CA 94103",
-              url: "https://maps.google.com/?q=Sightglass+Coffee+270+7th+St+San+Francisco",
-              description: "Popular coffee shop with great atmosphere",
+              uri: "https://maps.google.com/?cid=123",
+              placeId: "",
             },
             {
               name: "Philz Coffee",
-              address: "201 Berry St, San Francisco, CA 94158",
-              url: "https://maps.google.com/?q=Philz+Coffee+201+Berry+St+San+Francisco",
-              description: "Custom coffee blends in relaxed setting",
+              uri: "https://maps.google.com/?cid=456",
+              placeId: "",
             },
             {
               name: "Blue Bottle Coffee",
-              address: "66 Mint St, San Francisco, CA 94103",
-              url: "https://maps.google.com/?q=Blue+Bottle+Coffee+66+Mint+St+San+Francisco",
-              description: "Minimalist cafe perfect for meetings",
+              uri: "https://maps.google.com/?cid=789",
+              placeId: "",
             },
           ],
+          responseText: response.text || "Here are some great nearby spots",
         };
       }
 
       return {
         success: true,
         suggestions,
+        widgetToken,
+        responseText: response.text,
       };
     } catch (error) {
       console.error("Error with Maps grounding:", error);
