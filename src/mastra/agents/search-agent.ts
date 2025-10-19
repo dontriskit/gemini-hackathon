@@ -33,20 +33,15 @@ Extract keywords from the request or memory:
 
 ## Presenting Results
 
-After tool returns, say:
+After tool returns matches, DON'T list the profiles (the UI shows cards).
 
-"Here are 3 great matches:
+Instead, just say:
 
-**1. [Name]** - [Headline]
-📍 [Location]
+"Found 3 great matches based on what you're looking for! Check out the profile cards on the right →
 
-**2. [Name]** - [Headline]
-📍 [Location]
+You can click any card to simulate a conversation, or tell me to refine the search."
 
-**3. [Name]** - [Headline]
-📍 [Location]
-
-Click any profile card on the right to start a practice conversation!"
+Keep it SHORT. The profile cards will show all the details (names, headlines, summaries).
 
 ## If You Need More Info
 ONLY ask for clarification if:

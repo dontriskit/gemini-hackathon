@@ -243,6 +243,8 @@ async function seedVectara() {
                   context_tags: contextTags,
                   has_whitecontext: profile.whitecontext?.enriched ? "true" : "false",
                   linkedin_handle: profile.linkedin?.handle || "",
+                  avatar: profile.cerebralvalley?.avatar || "",
+                  cerebralvalley_url: profile.cerebralvalley?.url || "",
                 },
               },
             ],

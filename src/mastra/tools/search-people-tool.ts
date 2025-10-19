@@ -37,6 +37,8 @@ export const searchPeopleTool = createTool({
         summary: z.string().describe("AI-generated match summary"),
         score: z.number().describe("Relevance score from Vectara"),
         reasoning: z.string().describe("Why this person is a good match"),
+        avatar: z.string().optional().describe("Profile avatar URL"),
+        email: z.string().optional().describe("Contact email"),
       })
     ),
     error: z.string().optional(),
@@ -97,6 +99,8 @@ export const searchPeopleTool = createTool({
           summary: metadata.summary || "No summary available",
           score: result.score || 0,
           reasoning: result.text?.slice(0, 300) || "Relevant profile based on search criteria",
+          avatar: metadata.avatar || "",
+          email: metadata.email || "",
         };
       });
 

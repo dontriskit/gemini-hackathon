@@ -114,16 +114,54 @@ Respond as this person in a natural networking conversation.`;
             { role: "user" as const, content: message },
           ];
 
-      const response = await agent.generate(messages, {
-        resourceId: sessionId,
-        threadId: currentThreadId,
-      });
+      try {
+        const response = await agent.generate(messages, {
+          resourceId: sessionId,
+          threadId: currentThreadId,
+          maxSteps: 5, // Allow tool usage (Maps tool)
+        });
 
-      return {
-        success: true,
-        message: response.text,
-        threadId: currentThreadId,
-      };
+        console.log("🎭 Simulator tool results:", response.toolResults);
+
+        // Log detailed tool results
+        response.toolResults?.forEach((tr: any) => {
+          console.log(`🔧 Tool: ${tr.payload?.toolName}`);
+          console.log(`📍 Result:`, JSON.stringify(tr.payload?.result, null, 2));
+        });
+
+        return {
+          success: true,
+          message: response.text,
+          threadId: currentThreadId,
+          toolResults: response.toolResults?.map((tr: any) => ({
+            toolName: tr.payload?.toolName,
+            result: tr.payload?.result,
+          })) || [],
+        };
+      } catch (error: any) {
+        console.error("Error in simulator:", error);
+
+        // If memory error, try without thread
+        if (error.message?.includes("getThreadById") || error.message?.includes("prepare-memory")) {
+          console.log("Retrying without thread context...");
+          const response = await agent.generate(messages, {
+            resourceId: sessionId,
+            maxSteps: 5,
+          });
+
+          return {
+            success: true,
+            message: response.text,
+            threadId: currentThreadId,
+            toolResults: response.toolResults?.map((tr: any) => ({
+              toolName: tr.payload?.toolName,
+              result: tr.payload?.result,
+            })) || [],
+          };
+        }
+
+        throw error;
+      }
     }),
 
   /**

@@ -21,8 +21,26 @@ export default function OnboardPage() {
 
       // Check if onboarding is complete
       if (data.message.toLowerCase().includes("ready to see") ||
-          data.message.toLowerCase().includes("ready to find")) {
+          data.message.toLowerCase().includes("ready to find") ||
+          data.message.toLowerCase().includes("got it! i have everything")) {
         setIsComplete(true);
+
+        // Extract and store context from conversation
+        const context: any = {};
+        messages.forEach((msg, idx) => {
+          const content = msg.content.toLowerCase();
+          if (msg.role === "user") {
+            // Simple heuristic extraction
+            if (idx === 1 || content.includes("my name")) context.name = msg.content;
+            if (content.includes("live") || content.includes("based")) context.location = msg.content;
+            if (content.includes("priority") || content.includes("help")) context.priority = msg.content;
+            if (content.includes("looking for")) context.lookingFor = msg.content;
+            if (content.includes("fun") || content.includes("enjoy")) context.funActivities = msg.content;
+          }
+        });
+
+        localStorage.setItem("userContext", JSON.stringify(context));
+        console.log("💾 Saved onboarding context:", context);
       }
     },
   });

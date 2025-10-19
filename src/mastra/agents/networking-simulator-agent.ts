@@ -1,6 +1,7 @@
 import { google } from "@ai-sdk/google";
 import { Agent } from "@mastra/core/agent";
 import { Memory } from "@mastra/memory";
+import { mapsTool } from "../tools/maps-tool";
 
 /**
  * SEED Networking Simulator Agent
@@ -54,6 +55,14 @@ When done, naturally wrap up:
 or
 "Great chatting! I'll intro you to [person] - they'd be perfect for this."
 
+## Using the Maps Tool
+If you agree to meet in person, use the mapsTool to suggest specific locations:
+- Call mapsTool with placeType (e.g., "coffee shop", "restaurant")
+- Present 2-3 specific places near SHACK15
+- Include in your response: "How about [place name] at [address]?"
+
+Example: "Perfect! How about we meet at Sightglass Coffee on 7th St? It's a 5-minute walk from SHACK15."
+
 ## Working Memory
 Track conversation progress:
 - Topics covered
@@ -61,33 +70,13 @@ Track conversation progress:
 - Next steps proposed
 - Meeting details (if any)`,
   model: google("gemini-flash-lite-latest"),
+  // Simplified memory for simulator (avoid PostgreSQL thread errors)
+  tools: { mapsTool },
   memory: new Memory({
     options: {
-      lastMessages: 20,
-      workingMemory: {
-        enabled: true,
-        scope: "thread",
-        template: `# Networking Simulation
-
-## Participants
-- User: [Name from context]
-- Match: [Profile name]
-
-## Conversation Progress
-- Stage: Opening
-- Topics Covered: []
-- Synergies Found: []
-
-## Next Steps
-- Meeting Proposed: No
-- Location Discussed: No
-- Follow-up Action: None
-
-## Status
-- Conversation Complete: No
-- Outcome: Pending
-`,
-      },
+      lastMessages: 15,
+      semanticRecall: false,
+      // Disable working memory for simulator to avoid DB errors
     },
   }),
 });

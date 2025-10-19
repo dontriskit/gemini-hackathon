@@ -13,6 +13,8 @@ interface ProfileMatch {
   summary: string;
   score: number;
   reasoning: string;
+  avatar?: string;
+  email?: string;
 }
 
 export default function SearchPage() {
@@ -25,6 +27,7 @@ export default function SearchPage() {
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [renderTrigger, setRenderTrigger] = useState(0);
+  const [userContext, setUserContext] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const searchMutation = api.chat.search.useMutation({
@@ -98,6 +101,12 @@ export default function SearchPage() {
     }
     setSessionId(sid);
 
+    // Load onboarding context
+    const contextStr = localStorage.getItem("userContext");
+    if (contextStr) {
+      setUserContext(JSON.parse(contextStr));
+    }
+
     // Auto-trigger search based on onboarding context
     setMessages([{
       role: "assistant",
@@ -121,6 +130,10 @@ export default function SearchPage() {
     const userMessage = input.trim();
     setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
     setInput("");
+
+    // Clear previous results for cleaner UX
+    setMatches([]);
+    setHasSearched(false);
     setIsSearching(true);
 
     searchMutation.mutate({
@@ -150,18 +163,36 @@ export default function SearchPage() {
     <div className="flex min-h-screen flex-col bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-foreground">🔍 Find Your Matches</h1>
-          <p className="text-sm text-muted-foreground">
-            AI-powered search across {matches.length > 0 ? "424 " : ""}hackathon participants
+        <div className="container mx-auto px-4 py-3 md:py-4">
+          <h1 className="text-xl font-bold text-foreground md:text-2xl">🔍 Find Your Matches</h1>
+          <p className="text-xs text-muted-foreground md:text-sm">
+            AI-powered search across 424 hackathon participants
           </p>
+          <details className="mt-2 text-xs">
+            <summary className="cursor-pointer text-primary hover:underline">
+              📋 Show search criteria from onboarding
+            </summary>
+            <div className="mt-2 space-y-1 rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
+              {userContext ? (
+                <>
+                  {userContext.name && <div><strong>Name:</strong> {userContext.name}</div>}
+                  {userContext.location && <div><strong>Location:</strong> {userContext.location}</div>}
+                  {userContext.priority && <div><strong>Priority:</strong> {userContext.priority}</div>}
+                  {userContext.lookingFor && <div><strong>Looking for:</strong> {userContext.lookingFor}</div>}
+                  {userContext.funActivities && <div><strong>Interests:</strong> {userContext.funActivities}</div>}
+                </>
+              ) : (
+                <p className="italic">Loading your context...</p>
+              )}
+            </div>
+          </details>
         </div>
       </div>
 
-      {/* Main Content - Split Layout */}
-      <div className="flex flex-1 overflow-hidden">
+      {/* Main Content - Responsive Layout */}
+      <div className="flex flex-1 flex-col overflow-hidden md:flex-row">
         {/* Left: Chat */}
-        <div className="flex w-1/2 flex-col border-r border-border">
+        <div className="flex w-full flex-col border-b border-border md:w-1/2 md:border-b-0 md:border-r">
           <div className="flex-1 overflow-y-auto">
             <div className="p-4">
               <div className="space-y-4">
@@ -204,16 +235,8 @@ export default function SearchPage() {
         </div>
 
         {/* Right: Profile Cards */}
-        <div className="w-1/2 overflow-y-auto bg-muted/20 p-6" key={renderTrigger}>
-          {/* DEBUG PANEL - Remove after fixing */}
-          <div className="mb-4 rounded border border-yellow-500 bg-yellow-50 p-2 text-xs">
-            <div>DEBUG: isSearching={String(isSearching)}</div>
-            <div>matches.length={matches.length}</div>
-            <div>hasSearched={String(hasSearched)}</div>
-            <div>renderTrigger={renderTrigger}</div>
-          </div>
-
-          <div className="mb-4 flex items-center justify-between">
+        <div className="w-full overflow-y-auto bg-muted/20 p-4 md:w-1/2 md:p-6" key={renderTrigger}>
+          <div className="mb-3 flex items-center justify-between md:mb-4">
             <h2 className="text-lg font-semibold">Top Matches</h2>
             {matches.length > 0 && (
               <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
@@ -232,12 +255,33 @@ export default function SearchPage() {
                   key={profile.username}
                   className="rounded-lg border border-border bg-card p-5 shadow-sm transition-all hover:shadow-md"
                 >
-                  <div className="mb-3 flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-foreground">{profile.name}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground">{profile.headline}</p>
+                  <div className="mb-4 flex items-start gap-3">
+                    {/* Avatar */}
+                    <div className="flex-shrink-0">
+                      {profile.avatar ? (
+                        <img
+                          src={profile.avatar}
+                          alt={profile.name}
+                          className="h-14 w-14 rounded-full border-2 border-border object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&background=623dbe&color=fff&size=128`;
+                          }}
+                        />
+                      ) : (
+                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-lg font-semibold text-primary">
+                          {profile.name.charAt(0)}
+                        </div>
+                      )}
                     </div>
-                    <div className="ml-3 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+
+                    {/* Name & Headline */}
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-lg font-semibold text-foreground">{profile.name}</h3>
+                      <p className="mt-0.5 text-sm text-muted-foreground">{profile.headline}</p>
+                    </div>
+
+                    {/* Match Number Badge */}
+                    <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
                       #{idx + 1}
                     </div>
                   </div>
