@@ -25,10 +25,27 @@ export default async function Home() {
           {/* CTA Buttons */}
           <div className="flex flex-col gap-4 sm:flex-row">
             <Link
+              href="/gemini-voice"
+              className="group relative flex items-center justify-center gap-2 overflow-hidden rounded-lg bg-gradient-to-br from-primary via-primary to-primary/70 px-8 py-3 text-lg font-semibold text-primary-foreground shadow-xl transition-all hover:shadow-2xl hover:scale-105"
+            >
+              <span className="text-2xl transition-transform group-hover:scale-110">🎙️</span>
+              Gemini Voice
+              <span className="absolute right-2 top-1 rounded-full bg-green-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                New
+              </span>
+            </Link>
+            <Link
+              href="/onboard-voice"
+              className="flex items-center justify-center gap-2 rounded-lg bg-primary px-8 py-3 text-lg font-semibold text-primary-foreground transition-all hover:bg-primary/90"
+            >
+              <span className="text-xl">🎤</span>
+              Mastra Voice
+            </Link>
+            <Link
               href="/onboard"
               className="flex items-center justify-center rounded-lg bg-primary px-8 py-3 text-lg font-semibold text-primary-foreground transition-all hover:bg-primary/90"
             >
-              Start Finding Connections
+              Text Chat
             </Link>
             <Link
               href="/search"
@@ -72,7 +89,12 @@ export default async function Home() {
           {/* Footer */}
           <div className="mt-8 text-center text-sm text-muted-foreground">
             <p>Built for the Cerebral Valley Gemini Hackathon</p>
-            <p className="mt-1">Powered by Google Gemini 2.0 Flash & Mastra.ai</p>
+            <p className="mt-1">
+              Powered by{" "}
+              <span className="font-semibold text-primary">Mastra AI</span>,{" "}
+              <span className="font-semibold text-primary">Google Gemini Live API</span> &{" "}
+              <span className="font-semibold text-primary">Vectara RAG</span>
+            </p>
           </div>
         </div>
       </main>

@@ -45,6 +45,7 @@ Once you've gathered all the core information, let the user know you're ready to
 
 Store the final context in working memory before ending.`,
   model: google("gemini-flash-lite-latest"),
+  // Voice added lazily at runtime in API route (to avoid env var timing issues)
   memory: new Memory({
     options: {
       lastMessages: 10,

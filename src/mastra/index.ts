@@ -4,6 +4,7 @@ import { PostgresStore } from "@mastra/pg";
 
 // Import agents
 import { onboardingAgent } from "./agents/onboarding-agent";
+import { voiceOnboardingAgent } from "./agents/voice-onboarding-agent";
 import { searchAgent } from "./agents/search-agent";
 import { networkingSimulatorAgent } from "./agents/networking-simulator-agent";
 
@@ -18,6 +19,7 @@ import { mapsTool } from "./tools/maps-tool";
 export const mastra = new Mastra({
   agents: {
     onboardingAgent,
+    voiceOnboardingAgent,
     searchAgent,
     networkingSimulatorAgent,
   },
