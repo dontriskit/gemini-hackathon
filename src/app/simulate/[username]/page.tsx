@@ -117,7 +117,13 @@ export default function SimulatePage() {
   };
 
   const handleBack = () => {
-    router.push("/search");
+    // Go back to Gemini Voice search (or regular search if coming from there)
+    const fromGeminiVoice = localStorage.getItem("fromGeminiVoice");
+    if (fromGeminiVoice === "true") {
+      router.push("/gemini-voice");
+    } else {
+      router.push("/search");
+    }
   };
 
   if (!profileContext) {
@@ -146,6 +152,9 @@ export default function SimulatePage() {
               <h1 className="text-2xl font-bold text-foreground">💬 Networking Simulation</h1>
               <p className="text-sm text-muted-foreground">
                 Practice your pitch with {profileContext.name}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Powered by Mastra AI • Will suggest meeting locations via Maps
               </p>
             </div>
             <div className="rounded-lg border border-border bg-muted/50 p-3">

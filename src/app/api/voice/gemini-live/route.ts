@@ -1,6 +1,11 @@
 import { GoogleGenAI, Modality, MediaResolution, type LiveServerMessage, type Session } from "@google/genai";
 import { VectaraClient } from "vectara";
 
+// Polyfill WebSocket for Node.js environment (required for production/Docker)
+if (typeof WebSocket === 'undefined') {
+  global.WebSocket = require('ws');
+}
+
 export const dynamic = "force-dynamic";
 
 // Session storage

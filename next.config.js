@@ -15,6 +15,10 @@ const config = {
     'pg-promise',
     'pg',
     'pg-query-stream',
+    '@google/genai',
+    'ws',
+    'bufferutil',
+    'utf-8-validate',
   ],
   webpack: (config, { isServer }) => {
     if (!isServer) {

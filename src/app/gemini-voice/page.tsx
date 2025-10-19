@@ -42,6 +42,9 @@ export default function GeminiVoicePage() {
       localStorage.setItem("seedSessionId", sid);
     }
     setSessionId(sid);
+
+    // Clear the "from Gemini Voice" flag when on this page
+    localStorage.removeItem("fromGeminiVoice");
   }, []);
 
   useEffect(() => {
@@ -235,7 +238,17 @@ export default function GeminiVoicePage() {
 
   const handleSimulate = (profile: ProfileMatch) => {
     console.log("🎭 Starting simulation with:", profile.name);
+
+    // Stop the Gemini Live voice session before transitioning
+    stopVoiceSession();
+
+    // Save profile for simulation
     localStorage.setItem("simulateProfile", JSON.stringify(profile));
+
+    // Mark that we came from Gemini Voice (for back button)
+    localStorage.setItem("fromGeminiVoice", "true");
+
+    // Navigate to Mastra-powered simulation (uses maps tool)
     router.push(`/simulate/${profile.username}`);
   };
 
@@ -407,8 +420,11 @@ export default function GeminiVoicePage() {
                     onClick={() => handleSimulate(profile)}
                     className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
                   >
-                    💬 Simulate Conversation
+                    💬 Start Text Simulation
                   </button>
+                  <p className="mt-2 text-center text-xs text-muted-foreground">
+                    Voice will stop • Powered by Mastra AI + Maps
+                  </p>
                 </div>
               ))}
             </div>
