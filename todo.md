@@ -1,0 +1,9 @@
+- [x] create new dir with create t3 app
+- [x] install mastra
+- [x] create neon tech db
+- [x] create dockerfile
+- [x] create captain-definition
+- [x] deploy to prod
+- [ ] change t3 to SEED
+- [ ] use shadcn?
+- [ ] import hackathon guests data
