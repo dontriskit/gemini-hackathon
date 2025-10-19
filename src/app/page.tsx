@@ -1,51 +1,79 @@
 import Link from "next/link";
-
-import { LatestPost } from "@/app/_components/post";
-import { api, HydrateClient } from "@/trpc/server";
+import { HydrateClient } from "@/trpc/server";
 
 export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
-
-  void api.post.getLatest.prefetch();
-
   return (
     <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-primary/20 to-background">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
+          {/* Hero Section */}
+          <div className="flex flex-col items-center gap-4 text-center">
+            <h1 className="text-6xl font-bold tracking-tight sm:text-7xl">
+              <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                SEED
+              </span>
+            </h1>
+            <p className="max-w-2xl text-xl text-muted-foreground">
+              Plant long-term relationships at the hackathon.
+            </p>
+            <p className="max-w-xl text-lg text-muted-foreground">
+              Connect with founders, researchers, and builders using AI-powered matching
+              and conversation simulation.
             </p>
           </div>
 
-          <LatestPost />
+          {/* CTA Buttons */}
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <Link
+              href="/onboard"
+              className="flex items-center justify-center rounded-lg bg-primary px-8 py-3 text-lg font-semibold text-primary-foreground transition-all hover:bg-primary/90"
+            >
+              Start Finding Connections
+            </Link>
+            <Link
+              href="/search"
+              className="flex items-center justify-center rounded-lg border border-border bg-card px-8 py-3 text-lg font-semibold text-card-foreground transition-all hover:bg-accent"
+            >
+              Browse Participants
+            </Link>
+          </div>
+
+          {/* How It Works */}
+          <div className="mt-8 grid w-full max-w-4xl grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-6 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-2xl">
+                🌱
+              </div>
+              <h3 className="text-xl font-bold">1. Tell Us About You</h3>
+              <p className="text-sm text-muted-foreground">
+                Quick Q&A to understand your goals, interests, and who you're looking for
+              </p>
+            </div>
+            <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-6 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-2xl">
+                🔍
+              </div>
+              <h3 className="text-xl font-bold">2. Find Your Matches</h3>
+              <p className="text-sm text-muted-foreground">
+                AI searches hackathon participants to find the best connections for you
+              </p>
+            </div>
+            <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card p-6 text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-2xl">
+                💬
+              </div>
+              <h3 className="text-xl font-bold">3. Practice & Connect</h3>
+              <p className="text-sm text-muted-foreground">
+                Simulate conversations and get personalized icebreakers before meeting
+              </p>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-8 text-center text-sm text-muted-foreground">
+            <p>Built for the Cerebral Valley Gemini Hackathon</p>
+            <p className="mt-1">Powered by Google Gemini 2.0 Flash & Mastra.ai</p>
+          </div>
         </div>
       </main>
     </HydrateClient>
