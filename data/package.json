@@ -1,0 +1,20 @@
+{
+  "name": "cerebralvalley-scraper",
+  "version": "1.0.0",
+  "description": "Scraper for Cerebral Valley hackathon guest list using Patchright (undetected Playwright)",
+  "type": "module",
+  "main": "scrape.js",
+  "scripts": {
+    "login": "node login.js",
+    "scrape": "node scrape.js",
+    "enrich": "node enrich-profiles.js",
+    "install-browser": "npx patchright install chrome",
+    "postinstall": "echo '\n✓ Patchright installed! Run: npm run install-browser\n'"
+  },
+  "keywords": ["scraper", "patchright", "playwright", "cerebralvalley", "undetected"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "patchright": "^1.56.1"
+  }
+}
